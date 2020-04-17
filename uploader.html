@@ -1,113 +1,158 @@
 <!doctype html>
 <html>
-	<head>
-		<link href="https://cdn.bootcss.com/zui/1.9.1/css/zui.min.css" rel="stylesheet">
-		<meta charset="utf-8">
-		<title>文件出直链</title>
-		<style>
-			.center{width:300px;height:50px;margin:0 auto}
-			.underBtn{top:10%}
-			footer{position:absolute;color:#fff;bottom:5%;width:100%;height:25px;line-height:10px;text-align:center}
-		</style>
-		<script type="text/javascript">
-			function F_Open_dialog() {
-				$("#btn_file").click()
-			}
-		</script>
-	</head>
-	<body class="empty">
-		<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
-		<script src="https://cdn.bootcss.com/zui/1.9.1/js/zui.min.js"></script>
-		<script src="https://cdn.bootcss.com/clipboard.js/2.0.6/clipboard.min.js"></script>
-		<script>
-			var data64 = [];
-			var filenames = [];
-			window.addEventListener("dragenter", function(event) {
-				event.preventDefault()
-			}, false);
-			window.addEventListener("dragover", function(event) {
-				event.preventDefault()
-			}, false);
-			window.addEventListener("drop", function(event) {
-				for (var i = 0; i < event.dataTransfer.files.length; i++) {
-					var reader = new FileReader();
-					reader.onload = function(e) {
-						data64.push(e.target.result)
-					};
-					reader.readAsDataURL(event.dataTransfer.files[i]);
-					filenames.push(event.dataTransfer.files[i].name);
-					event.preventDefault();
-					$(".cards").append("<div id=\"cardDiv" + filenames.length.toString() + "\" class=\"col-md-4 col-sm-6 col-lg-3\"><div class=\"card\"><div class=\"card-heading\"><strong>" + event.dataTransfer.files[i].name + "</strong></div><button type=\"button\" id=\"" + filenames.length.toString() + "\" class=\"btn btn-danger\" onclick=\"deleteFile(this)\"><i class=\"icon icon-times\"></i></button></div></div>")
+<head>
+	<link href="https://cdn.bootcss.com/zui/1.9.1/css/zui.min.css" rel="stylesheet">
+	<meta charset="utf-8">
+	<title>文件出直链</title>
+	<style>
+		.center {
+			width: 300px;
+			height: 50px;
+			margin: 0 auto;
+		}
+		.underBtn {
+			top: 10%;
+		}
+		footer{
+			position:absolute;
+			color:#fff;
+			bottom:5%;
+			width:100%;
+			height:25px;
+			line-height:10px;
+			text-align:center;
+		}
+	</style>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?f39023c802a1d679df15430cfd59b54a";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+	<script type="text/javascript">
+	function F_Open_dialog() 
+	{ 
+		$("#btn_file").click(); 
+	}
+	</script>
+	
+</head>
+
+<body class="empty">
+<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/zui/1.9.1/js/zui.min.js"></script>
+<script src="https://cdn.bootcss.com/clipboard.js/2.0.6/clipboard.min.js"></script>
+<script>
+	var data64 = [];
+	var filenames = [];
+    window.addEventListener("dragenter", function(event) { event.preventDefault(); }, false);
+    window.addEventListener("dragover", function(event) { event.preventDefault(); }, false);
+    window.addEventListener("drop", function(event) {
+		for(var i=0;i<event.dataTransfer.files.length;i++) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				data64.push(e.target.result);
+			};
+			reader.readAsDataURL(event.dataTransfer.files[i]);
+			filenames.push(event.dataTransfer.files[i].name);
+			event.preventDefault();
+			$(".cards").append("<div id=\"cardDiv" + filenames.length.toString() + "\" class=\"col-md-4 col-sm-6 col-lg-3\"><div class=\"card\"><div class=\"card-heading\"><strong>" + event.dataTransfer.files[i].name + "</strong></div><div class=\"progress progress-striped active\"> <div id=\"progress" + filenames.length.toString() + "\" class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 0%\"><span class=\"sr-only\"> </span></div></div><button type=\"button\" id=\"" + filenames.length.toString() + "\" class=\"btn btn-danger\" onclick=\"deleteFile(this)\"><i class=\"icon icon-times\"></i></button></div></div>");
+		}
+        document.body.classList.remove('empty');
+    }, false);
+</script>
+
+<script>
+	function chose(event) {
+		var k = event.target.files.length;
+		for(var i=0; i<k; i++) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				data64.push(e.target.result);
+			};
+			reader.readAsDataURL(event.target.files[i]);
+			filenames.push(event.target.files[i].name);
+			$(".cards").append("<div id=\"cardDiv" + filenames.length.toString() + "\" class=\"col-md-4 col-sm-6 col-lg-3\"><div class=\"card\"><div class=\"card-heading\"><strong>" + event.target.files[i].name + "</strong></div><div class=\"progress progress-striped active\"> <div id=\"progress" + filenames.length.toString() + "\" class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 0%\"><span class=\"sr-only\"> </span></div></div><button type=\"button\" id=\"" + filenames.length.toString() + "\" class=\"btn btn-danger\" onclick=\"deleteFile(this)\"><i class=\"icon icon-times\"></i></button></div></div>");
+			
+			
+			event.preventDefault();
+		}
+	}
+	function deleteFile(obj) {
+		deleteId = parseInt(obj.getAttribute("id"));
+		data64.splice(deleteId - 1, 1);
+		filenames.splice(deleteId - 1, 1);
+		$("#cardDiv" + deleteId.toString())[0].parentNode.removeChild($("#cardDiv" + deleteId.toString())[0]);
+		for(var i=deleteId+1; i<=data64.length+1; i++)
+		{
+			$("#cardDiv" + i.toString()).attr('id', 'cardDiv'+(i-1).toString());
+			$("#" + i.toString()).attr('id', (i-1).toString());
+			$("#progress" + i.toString()).attr('id', 'progress' + (i - 1).toString());
+		}
+	}
+	function postData() {
+            for(var i=0;i<filenames.length;i++) {
+		$.ajax({
+			url:"https://huanghaozi.cn/tools/file2link/main.php",
+			type: 'post',
+			async: true,
+			dataType: 'text',
+			jsonp: 'callback',
+			scriptCharset: 'utf-8',
+			contentType: "application/json",
+			jsonpCallback: "jsonpCallback",
+			data: filenames[i] + " " + data64[i],
+			xhr: function() {
+				myXhr = $.ajaxSettings.xhr();
+				if(myXhr.upload){
+					myXhr.upload.addEventListener('progress',function(e){                            
+						var loaded = e.loaded;
+						var total = e.total;
+						var percent = Math.floor(100*loaded/total)+"%";
+						console.log("已经上传了："+percent);                 
+						$("#progress" + (i).toString()).css("width",percent);                                                                
+					}, false);
 				}
-				document.body.classList.remove('empty')
-			}, false);
-		</script>
-		<script>
-			function chose(event) {
-				var k = event.target.files.length;
-				for (var i = 0; i < k; i++) {
-					var reader = new FileReader();
-					reader.onload = function(e) {
-						data64.push(e.target.result)
-					};
-					reader.readAsDataURL(event.target.files[i]);
-					filenames.push(event.target.files[i].name);
-					$(".cards").append("<div id=\"cardDiv" + filenames.length.toString() + "\" class=\"col-md-4 col-sm-6 col-lg-3\"><div class=\"card\"><div class=\"card-heading\"><strong>" + event.target.files[i].name + "</strong></div><button type=\"button\" id=\"" + filenames.length.toString() + "\" class=\"btn btn-danger\" onclick=\"deleteFile(this)\"><i class=\"icon icon-times\"></i></button></div></div>");
-					event.preventDefault()
-				}
+				return myXhr;
+			},
+			success: function(data) {
+                                console.log(data);
+				$("#" + (i).toString())[0].parentNode.innerHTML+=("<button type=\"button\" data-clipboard-text=\"" + data + "\" class=\"btn btn-success\"><i class=\"icon icon-copy\"></i></button>");
+			},
+			error:function(err) {
+				console.log(err);
 			}
-			function deleteFile(obj) {
-				deleteId = parseInt(obj.getAttribute("id"));
-				data64.splice(deleteId - 1, 1);
-				filenames.splice(deleteId - 1, 1);
-				$("#cardDiv" + deleteId.toString())[0].parentNode.removeChild($("#cardDiv" + deleteId.toString())[0]);
-				for (var i = deleteId + 1; i <= data64.length + 1; i++) {
-					$("#cardDiv" + i.toString()).attr('id', 'cardDiv' + (i - 1).toString());
-					$("#" + i.toString()).attr('id', (i - 1).toString())
-				}
-			}
-			function postData() {
-				for (var i = 0; i < filenames.length; i++) {
-					$.ajax({
-						url: "https://huanghaozi.cn/tools/file2link/main.php",
-						type: 'post',
-						async: false,
-						dataType: 'text',
-						jsonp: 'callback',
-						scriptCharset: 'utf-8',
-						contentType: "application/json",
-						jsonpCallback: "jsonpCallback",
-						data: filenames[i] + " " + data64[i],
-						success: function(data) {
-							console.log(data);
-							$("#" + (i + 1).toString())[0].parentNode.innerHTML += ("<button type=\"button\" data-clipboard-text=\"" + data + "\" class=\"btn btn-success\"><i class=\"icon icon-copy\"></i></button>")
-						},
-						error: function(err) {
-							console.log(err)
-						}
-					})
-				}
-			}
-			var clipboard = new ClipboardJS('button');
-			clipboard.on('success', function(e) {
-				e.clearSelection();
-				console.log('复制成功')
-			});
-			clipboard.on('error', function(e) {
-				e.clearSelection();
-				console.log('复制失败')
-			});
-		</script>
-		<input type="file" id="btn_file" style="display:none" multiple onchange="chose(event);">
-		<div class="center">
-			<button class="btn btn-primary btn-lg" type="button" onclick="F_Open_dialog()">选择文件或拖拽</button>
-			<button class="btn btn-lg" type="button" onclick="postData()">上传文件</button>
-		</div>
-		<div class="cards underBtn">
-		</div>
-		<footer>
-			<p><a href="https://huanghaozi.cn">HHz's Blog</a></p>
-			<p><a href="https://github.com/huanghaozi/file2link">Github Repo</a></p>
-		</footer>
-	</body>
+		});
+            }
+	}
+
+				var clipboard = new ClipboardJS('button');
+clipboard.on('success',function(e){
+  e.clearSelection();
+  console.log('复制成功');
+ });
+clipboard.on('error',function(e){
+  e.clearSelection();
+  console.log('复制失败');
+ });
+</script>
+
+<input type="file" id="btn_file" style="display:none" multiple onchange="chose(event);">
+<div class="center">
+<button class="btn btn-primary btn-lg" type="button" onclick="F_Open_dialog()">选择文件或拖拽</button>
+<button class="btn btn-lg" type="button" onclick="postData()">上传文件</button>
+</div>
+
+<div class="cards underBtn">
+</div>
+
+<footer>
+  <p><a href="https://huanghaozi.cn">HHz's Blog</a></p>
+  <p><a href="https://github.com/huanghaozi/file2link">Github Repo</a></p>
+</footer>
+
+</body>
 </html>
