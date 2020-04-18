@@ -39,5 +39,5 @@ function foo($fileEx, $content, $name, $email, $username, $token, $repo) {
 	$headers=array('User-Agent: '.$username, 'Authorization:token '.$token);
 	$action="PUT";
 	$strResult = $cf->callInterfaceCommon($url, $action, $params, $headers);
-	return "https://cdn.jsdelivr.net/gh/".$username."/".$repo."@master/".$filename;
+	return "https://cdn.jsdelivr.net/gh/huanghaozi/ImgHosting@master/".$filename." "."https://raw.githubusercontent.com/huanghaozi/ImgHosting/master/".$filename;
 }

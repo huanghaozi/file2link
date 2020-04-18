@@ -120,7 +120,7 @@
 			},
 			success: function(data) {
                                 console.log(data);
-				$("#" + (i).toString())[0].parentNode.innerHTML+=("<button type=\"button\" data-clipboard-text=\"" + data + "\" class=\"btn btn-success\"><i class=\"icon icon-copy\"></i></button>");
+				$("#" + (i).toString())[0].parentNode.innerHTML+=("<button type=\"button\" data-clipboard-text=\"" + data.split(' ')[0] + "\" class=\"btn btn-success\"><i class=\"icon icon-copy\"></i>CDN</button><button type=\"button\" data-clipboard-text=\"" + data.split(' ')[1] + "\" class=\"btn btn-success\"><i class=\"icon icon-copy\"></i>CDN</button>");
 			},
 			error:function(err) {
 				console.log(err);
