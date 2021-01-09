@@ -1,10 +1,8 @@
 <?php
-$GITHUB_USERNAME = 'huanghaozi';
-$GITHUB_REPONAME = '';
-$GITHUB_BRANCHNAME = '';
-$GITHUB_NICKNAME = 'HH';
-$GITHUB_EMAIL = '';
-$GITHUB_TOKEN = '';
+$GITHUB_USERNAME = 'AimingSpringJungle';
+$GITHUB_REPONAME = 'Storage4App';
+$GITHUB_BRANCHNAME = 'master';
+$GITHUB_TOKEN = '39c244dd252acf7e22f2596094b30f09ea4875ff';
 
 function callInterfaceCommon($URL, $type, $params, $headers)
 {
@@ -38,36 +36,34 @@ function callInterfaceCommon($URL, $type, $params, $headers)
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
             break;
     }
-    curl_exec($ch);
+    $result = curl_exec($ch);
     if (curl_errno($ch)) {
-        return 'Curl error: ' . curl_error($ch);
+        return 'Curl Error: ' . curl_error($ch);
     }
     curl_close($ch);
-    return 'success';
+    return 'Success';
 }
 
 function upload_file_to_github($abs_filepath, $content)
 {
-    global $GITHUB_USERNAME, $GITHUB_TOKEN, $GITHUB_NICKNAME;
-    global $GITHUB_EMAIL, $GITHUB_REPONAME, $GITHUB_BRANCHNAME;
-    $params = sprintf('"message":"", "branch": "%s", 
-                "committer": {
-                    "name": "%s",
-                    "email": "%s",
-                    "content": "%s"
-                }', $GITHUB_BRANCHNAME, $GITHUB_NICKNAME, $GITHUB_EMAIL, $content);
+    global $GITHUB_USERNAME, $GITHUB_TOKEN;
+    global $GITHUB_REPONAME, $GITHUB_BRANCHNAME;
+    $params = sprintf('{"message":"Upload New File", 
+                        "branch": "%s", 
+                        "content": "%s"
+                }', $GITHUB_BRANCHNAME, $content);
     $url = sprintf('https://api.github.com/repos/%s/%s/contents/%s',
         $GITHUB_USERNAME, $GITHUB_REPONAME, $abs_filepath);
     $headers = array('User-Agent: ' . $GITHUB_USERNAME, 'Authorization:token ' . $GITHUB_TOKEN);
     $result = callInterfaceCommon($url, "PUT", $params, $headers);
-    if ($result == 'success') {
+    if ($result == 'Success') {
         $cdnURL = sprintf('https://cdn.jsdelivr.net/gh/%s/%s@%s/%s',
             $GITHUB_USERNAME, $GITHUB_REPONAME, $GITHUB_BRANCHNAME, $abs_filepath);
         $originURL = sprintf('https://raw.githubusercontent.com/%s/%s/%s/%s',
             $GITHUB_USERNAME, $GITHUB_REPONAME, $GITHUB_BRANCHNAME, $abs_filepath);
         return $cdnURL . ' ' . $originURL;
     } else {
-        return 'Error';
+        return $result;
     }
 }
 

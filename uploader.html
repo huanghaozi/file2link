@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="//cdn.bootcss.com/zui/1.9.2/css/zui.min.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/zui/1.9.2/css/zui.min.css" rel="stylesheet">
     <style>
         .cards-wrapper {
             margin: 1%;
+        }
+
+        .progress {
+            margin: 9px;
+            margin-bottom: 10px;
         }
 
         .main-buttons-wrapper {
@@ -17,23 +22,40 @@
             margin-right: 1%;
         }
 
+        .button-wrapper {
+            margin: 9px;
+            margin-top: 18px;
+        }
+
         .button-wrapper > button {
-            margin: 1%;
+            margin-right: 1%;
         }
     </style>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="//cdn.bootcss.com/zui/1.9.2/lib/jquery/jquery.js"></script>
-<script src="//cdn.bootcss.com/zui/1.9.2/js/zui.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/zui/1.9.2/js/zui.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+<script type="text/javascript">
+    function displayTip(info, t) {
+        new $.zui.Messager(info, {
+            type: t,
+            time: 2000,
+            placement: 'center'
+        }).show();
+    }
+</script>
 <div class="main-buttons-wrapper">
-    <button class="btn btn-lg btn-primary">选择文件或拖拽</button>
-    <button class="btn btn-lg">上传文件</button>
+    <button class="btn btn-lg btn-primary" onclick="chooseFile()">选择文件或拖拽</button>
+    <input type="file" id="fileDialog" style="display:none" multiple="">
+    <button class="btn btn-lg" onclick="uploadAll()">上传文件</button>
 </div>
 <div class="cards-wrapper">
     <div class="cards">
-        <div class="col-md-4 col-sm-6 col-lg-3">
-            <div :id="item.id" class="card" v-for="item in items">
+        <div class="col-md-4 col-sm-6 col-lg-3" v-for="(item, index) in items">
+            <div class="card">
                 <div class="card-heading">
                     <strong>{{ item.filename }}</strong>
                 </div>
@@ -45,18 +67,19 @@
                     </div>
                 </div>
                 <div class="button-wrapper">
+                    <button class="btn btn-danger" type="button" v-on:click="deleteItem(index)">
+                        <i class="icon icon-times"></i>
+                    </button>
                     <button class="btn btn-success" type="button" v-if="item.hasFinished === true"
                             :data-clipboard-text="item.cdnurl">
                         <i class="icon icon-copy"></i>
-                        JsDelivr
+                        JsDelivr3
+
                     </button>
                     <button class="btn btn-success" type="button" v-if="item.hasFinished === true"
                             :data-clipboard-text="item.githuburl">
                         <i class="icon icon-copy"></i>
                         Github
-                    </button>
-                    <button class="btn btn-danger" type="button" :onclick="deleteFile(item.id)">
-                        <i class="icon icon-times"></i>
                     </button>
                 </div>
             </div>
@@ -64,28 +87,127 @@
     </div>
 </div>
 <script type="text/javascript">
-    var cards_vue = new Vue({
+    let dataWrapper = [];
+    let cards_vue = new Vue({
         el: '.cards',
         data: {
-            items: [
-                {
-                    id: 'a1',
-                    filename: 'qq.png',
-                    hasFinished: true,
-                    progress: 10,
-                    cdnurl: '',
-                    githuburl: '',
-                    hasFinished: false
-                }
-            ]
+            items: dataWrapper
+        },
+        methods: {
+            deleteItem: function (index) {
+                this.items.splice(index, 1);
+            }
         }
     });
-    function addFIle() {
-
+    let clipboard = new ClipboardJS('.btn');
+    clipboard.on('success', function (e) {
+        displayTip('复制成功!', 'success');
+    });
+    function checkFile(file) {
+        const notAllowedFormat = ['doc', 'docx', 'fasta', 'xlsx', 'exe', 'xls', 'ppt', 'pptx', 'jar', 'lnk', 'apk'];
+        let suffix = file.name.split('.').pop();
+        if(notAllowedFormat.indexOf(suffix) > -1) {
+            return suffix + '为不支持的文件格式!';
+        }
+        if(file.size > 15728640) {
+            return file.name + '太大了，限15MB以内!';
+        }
+        return true;
     }
-    function deleteFile(element) {
-
+    function addFile(file) {
+        let checkResult = checkFile(file);
+        if(checkResult === true) {
+            let reader = new FileReader();
+            let b64 = {data: ''};
+            reader.onload = function (e) {
+                b64['data'] = e.target.result;
+            }
+            reader.readAsDataURL(file);
+            data = {
+                filename: file.name,
+                base64: b64,
+                hasFinished: false,
+                progress: 0,
+                cdnurl: '',
+                githuburl: '',
+                isUploading: false
+            };
+            dataWrapper.push(data);
+        }
+        else {
+            displayTip(checkResult, 'danger');
+        }
     }
+    function chooseFile() {
+        $("#fileDialog").click();
+    }
+    function uploadSingleFile(dataDict) {
+        let dataJsonStr = JSON.stringify({'filename': dataDict['filename'],
+            'content': dataDict['base64']['data'].split(',')[1]});
+        $.ajax({
+            url: 'api.php',
+            type: 'post',
+            async: true,
+            dataType: 'text',
+            scriptCharset: 'utf-8',
+            contentType: 'application/json',
+            jsonpCallback: 'jsonpCallback',
+            cache: false,
+            processData: false,
+            data: dataJsonStr,
+            xhr: function () {
+                myXhr = $.ajaxSettings.xhr();
+                if(myXhr.upload) {
+                    myXhr.upload.addEventListener('progress', function (e) {
+                        let loaded = e.loaded;
+                        let total = e.total;
+                        let percent = Math.floor(100*loaded/total);
+                        dataDict.progress = percent;
+                    }, false);
+                }
+                return myXhr;
+            },
+            success: function (result) {
+                if(result.split(':')[0] === 'Curl Error') {
+                    displayTip('文件' + dataDict['filename'] + ': PHP服务端传送到Github失败!', 'danger');
+                    return;
+                }
+                dataDict.cdnurl = result.split(' ')[0];
+                dataDict.githuburl = result.split(' ')[1];
+                dataDict.hasFinished = true;
+            },
+            error: function (error) {
+                displayTip('文件' + dataDict['filename'] + ': 传送到PHP服务端失败!', 'danger');
+            }
+        })
+    }
+    function uploadAll() {
+        for(let i=0; i<dataWrapper.length; i++) {
+            let data = dataWrapper[i];
+            uploadSingleFile(data);
+        }
+    }
+</script>
+<script type="text/javascript">
+    window.addEventListener("dragenter", function(event) { event.preventDefault(); }, false);
+    window.addEventListener("dragover", function(event) { event.preventDefault(); }, false);
+    window.addEventListener("drop", function(event) {
+        event.preventDefault();
+        let files = event.dataTransfer.files;
+        for (let i=0; i<files.length; i++) {
+            let file = files[i];
+            addFile(file);
+        }
+    }, false);
+    $("#fileDialog").change(function (event) {
+        event.preventDefault();
+        let files = event.target.files;
+        for (let i=0; i<files.length; i++) {
+            let file = files[i];
+            addFile(file);
+        }
+        $("#fileDialog").each(function(){ $(this).val(''); });
+    });
 </script>
 </body>
 </html>
