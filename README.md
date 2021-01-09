@@ -1,6 +1,8 @@
 # file2link
 PHP利用Github与jsdelivr生成文件直链（对象存储/图床）
 
+[Demo](https://huanghaozi.cn/tools/file2link/uploader.html)
+
 芜湖，用Vue重构基本完成！
 
 # 食用方法
