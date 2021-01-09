@@ -18,10 +18,6 @@
             margin: 1%;
         }
 
-        .main-buttons-wrapper > button {
-            margin-right: 1%;
-        }
-
         .button-wrapper {
             margin: 9px;
             margin-top: 18px;
@@ -48,9 +44,11 @@
     }
 </script>
 <div class="main-buttons-wrapper">
-    <button class="btn btn-lg btn-primary" onclick="chooseFile()">选择文件或拖拽</button>
-    <input type="file" id="fileDialog" style="display:none" multiple="">
-    <button class="btn btn-lg" onclick="uploadAll()">上传文件</button>
+    <div class="btn-group">
+        <button class="btn btn-lg btn-primary" onclick="chooseFile()">选择文件或拖拽</button>
+        <input type="file" id="fileDialog" style="display:none" multiple="">
+        <button class="btn btn-lg" onclick="uploadAll()">上传文件</button>
+    </div>
 </div>
 <div class="cards-wrapper">
     <div class="cards">
