@@ -1,8 +1,8 @@
 <?php
-$GITHUB_USERNAME = 'AimingSpringJungle';
-$GITHUB_REPONAME = 'Storage4App';
-$GITHUB_BRANCHNAME = 'master';
-$GITHUB_TOKEN = '39c244dd252acf7e22f2596094b30f09ea4875ff';
+$GITHUB_USERNAME = 'user_name';  // 用户名
+$GITHUB_REPONAME = 'repo_name';  // Repository名
+$GITHUB_BRANCHNAME = 'main';  // 分支名
+$GITHUB_TOKEN = '';  // TOKEN
 
 function callInterfaceCommon($URL, $type, $params, $headers)
 {
