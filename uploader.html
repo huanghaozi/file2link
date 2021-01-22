@@ -77,6 +77,11 @@
                     <button class="btn btn-success" type="button" v-if="item.hasFinished === true"
                             :data-clipboard-text="item.githuburl">
                         <i class="icon icon-copy"></i>
+                        7ED-CDN
+                    </button>
+                    <button class="btn btn-success" type="button" v-if="item.hasFinished === true"
+                            :data-clipboard-text="item.sevencdn">
+                        <i class="icon icon-copy"></i>
                         Github
                     </button>
                 </div>
@@ -170,8 +175,10 @@
                     displayTip('文件' + dataDict['filename'] + ': PHP服务端传送到Github失败!', 'danger');
                     return;
                 }
-                dataDict.cdnurl = result.split(' ')[0];
-                dataDict.githuburl = result.split(' ')[1];
+                let tempList = result.split(' ');
+                dataDict.cdnurl = tempList[0];
+                dataDict.sevencdn = tempList[1];
+                dataDict.githuburl = tempList[2];
                 dataDict.hasFinished = true;
             },
             error: function (error) {

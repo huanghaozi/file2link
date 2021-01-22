@@ -67,9 +67,11 @@ function upload_file_to_github($abs_filepath, $content)
     if ($result == 'Success') {
         $cdnURL = sprintf('https://cdn.jsdelivr.net/gh/%s/%s@%s/%s',
             $GITHUB_USERNAME, $GITHUB_REPONAME, $GITHUB_BRANCHNAME, $abs_filepath);
-        $originURL = sprintf('https://raw.githubusercontent.com/%s/%s/tree/%s/%s',
+        $originURL = sprintf('https://raw.githubusercontent.com/%s/%s/%s/%s',
             $GITHUB_USERNAME, $GITHUB_REPONAME, $GITHUB_BRANCHNAME, $abs_filepath);
-        return $cdnURL . ' ' . $originURL;
+        $sevenCDN = sprintf('https://raw.sevencdn.com/%s/%s/%s/%s',
+            $GITHUB_USERNAME, $GITHUB_REPONAME, $GITHUB_BRANCHNAME, $abs_filepath);
+        return $cdnURL . ' ' . $originURL . ' ' . $sevenCDN;
     } else {
         return $result;
     }
